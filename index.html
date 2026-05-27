@@ -37,35 +37,23 @@
     .subtitle {
       font-size: 14px;
       color: #555;
-      margin-bottom: 14px;
-    }
-
-    .status {
-      font-size: 13px;
-      color: green;
-      margin-bottom: 10px;
-    }
-
-    .count {
-      font-size: 13px;
-      color: #666;
-      margin-top: 10px;
-      margin-bottom: 16px;
-      padding: 8px 0;
-      border-top: 1px solid #ddd;
-      border-bottom: 1px solid #ddd;
+      margin-bottom: 18px;
     }
 
     #musics {
       margin-top: 10px;
     }
 
+    .music-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
     a {
       color: #0044cc;
       text-decoration: underline;
-      display: inline-block;
-      padding: 4px 0;
-      margin-bottom: 14px;
+      font-size: 20px;
+      line-height: 1.6;
       word-break: break-word;
     }
 
@@ -90,14 +78,6 @@
       100% TRUSTED platform To Download Free songs & musics.
     </div>
 
-    <div class="status">
-      ● ONLINE
-    </div>
-
-    <div id="count" class="count">
-      Loading musics count...
-    </div>
-
     <div id="musics">
       Loading musíso...
     </div>
@@ -119,87 +99,11 @@
         const container =
           document.getElementById('musics');
 
-        const countBox =
-          document.getElementById('count');
-
-        container.innerHTML = '';
-
-        const lines =
-          text.trim().split('\n');
-
-        let total = 0;
-
-        lines.forEach(line => {
-
-          if (!line.trim()) return;
-
-          const parts = line.split('|');
-
-          const file = parts[0]?.trim();
-
-          const title = parts[1]?.trim();
-
-          if (!file || !title) return;
-
-          total++;
-
-          const link =
-            document.createElement('a');
-
-          link.href = file;
-
-          link.innerText = title;
-
-          link.setAttribute('download', '');
-
-          container.appendChild(link);
-
-          container.appendChild(
-            document.createElement('br')
-          );
-
-        });
-
-        countBox.innerText =
-          total + ' downloadable musics';
-
-      })
-
-      .catch(error => {
-
-        document.getElementById('musics').innerHTML =
-          'Unable to load musics.';
-
-      });
-
-  </script>
-
-</body>
-
-</html>
-  </div>
-
-  <script>
-
-    fetch('musics.txt')
-
-      .then(response => response.text())
-
-      .then(text => {
-
-        const container =
-          document.getElementById('musics');
-
-        const countBox =
-          document.getElementById('count');
-
         container.innerHTML = '';
 
         const lines =
           text.trim().split('\\n');
 
-        let total = 0;
-
         lines.forEach(line => {
 
           if (!line.trim()) return;
@@ -212,7 +116,10 @@
 
           if (!file || !title) return;
 
-          total++;
+          const item =
+            document.createElement('div');
+
+          item.className = 'music-item';
 
           const link =
             document.createElement('a');
@@ -223,12 +130,11 @@
 
           link.setAttribute('download', '');
 
-          container.appendChild(link);
+          item.appendChild(link);
+
+          container.appendChild(item);
 
         });
-
-        countBox.innerText =
-          total + ' downloadable musics';
 
       })
 
@@ -242,4 +148,5 @@
   </script>
 
 </body>
+
 </html>
