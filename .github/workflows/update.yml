@@ -1,0 +1,53 @@
+name: Generate Music Index
+
+on:
+  push:
+    paths:
+      - "musics.txt"
+      - "*.mp3"
+      - "generator.py"
+  workflow_dispatch:        # manual trigger from GitHub UI
+
+# Prevent two runs from writing index.html at the same time.
+concurrency:
+  group: generate-index
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # needed to push the updated index.html
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch with the token so the push step is authenticated.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run generator
+        run: python generator.py
+
+      - name: Commit and push index.html (if changed)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage only index.html — never commit generator.py changes
+          # triggered by this workflow itself (avoids infinite loop).
+          git add index.html
+
+          # `git diff --cached --quiet` exits 0 when nothing is staged.
+          if git diff --cached --quiet; then
+            echo "No changes to index.html — skipping commit."
+          else
+            git commit -m "chore: regenerate index.html from musics.txt [skip ci]"
+            git push
+          fi
+
